@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸運抽籤網頁</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 幸運大抽籤 🎉</h1>
+        <div class="input-group">
+            <label for="names">請輸入抽籤名單（每行一個名字）：</label>
+            <textarea id="names" rows="6" placeholder="小明&#10;小華&#10;小美"></textarea>
+        </div>
+        <button id="draw-btn">開始抽籤！</button>
+        <div id="result-container" class="hidden">
+            <h2>中獎得主是：</h2>
+            <div id="winner-display">?</div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
