@@ -1,6 +1,6 @@
 module.exports = async function (context, req) {
     context.res = {
         status: 200,
-        body: { message: "Hello from line-login" }
+        body: "Hello from line-login, backend is working!"
     };
 };
