@@ -1,4 +1,4 @@
-const CHANNEL_ID = '1657218671'; // 你的 LINE Channel ID
+const CHANNEL_ID = '2011462481'; // 你的 LINE Channel ID
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 
 window.addEventListener('DOMContentLoaded', function() {
