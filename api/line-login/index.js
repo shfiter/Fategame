@@ -87,9 +87,12 @@ module.exports = async function (context, req) {
         };
 
     } catch (error) {
-        // 🚨 強制把最詳細的錯誤直接吐到前端 Response
         context.res = {
             status: 500,
+            headers: {
+                'x-error-message': encodeURIComponent(error.message || 'Unknown error'),
+                'x-error-stack': encodeURIComponent(error.stack || '')
+            },
             body: {
                 error: error.message,
                 stack: error.stack
