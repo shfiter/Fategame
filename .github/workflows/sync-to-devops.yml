@@ -1,0 +1,20 @@
+name: Sync to Azure DevOps
+
+on:
+  push:
+    branches: [ main ] # 當你每次 push 到 main 分支時觸發
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # 完整抓取 Git 歷史紀錄，確保同步順暢
+
+      - name: Push to Azure DevOps
+        uses: pixta-dev/repository-syncing-action@v1
+        with:
+          target_repo: https://shfiter:${{ secrets.AZURE_PAT }}@dev.azure.com/shfiter/Fategame/_git/Fategame
+          target_branch: main
