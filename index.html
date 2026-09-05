@@ -3,33 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>賽事身分驗證系統</title>
+    <title>賽事身分驗證與報名系統</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <!-- 狀態一：未登入畫面 -->
         <div id="view-login" class="view-section">
-            <h1>🔐 身分驗證</h1>
+            <h1>🏆 賽事報名系統</h1>
             <p>請先使用 LINE 帳號登入系統</p>
             <button id="line-login-btn" class="line-btn">
                 使用 LINE 帳號登入
             </button>
         </div>
 
-        <!-- 狀態二：驗證處理中 -->
+        <!-- 狀態二：驗證處理中 / 檢查登入中 -->
         <div id="view-loading" class="view-section hidden">
-            <h2>正在取得 LINE 身分，請稍候...</h2>
+            <h2>正在確認登入狀態，請稍候...</h2>
         </div>
 
-        <!-- 狀態三：登入成功，顯示 LINE 資訊 -->
-        <div id="view-profile" class="view-section hidden">
-            <h2>🎉 登入成功！</h2>
-            <div class="profile-card">
-                <p><strong>LINE 名稱：</strong><span id="display-name">載入中...</span></p>
-                <p><strong>LINE UID：</strong><span id="display-uid">載入中...</span></p>
+        <!-- 狀態三：登入成功後的主畫面（乾淨、只顯示名稱與動態按鈕） -->
+        <div id="view-dashboard" class="view-section hidden">
+            <h2>歡迎回來，<span id="display-name">使用者</span>！</h2>
+            <p class="status-subtext">您的身分已完成綁定</p>
+
+            <!-- 動態操作按鈕區（未來會依據身分長出不同按鈕） -->
+            <div id="action-area" class="action-container">
+                <!-- 範例按鈕：之後可根據隊長/隊員切換 -->
+                <button id="primary-action-btn" class="action-btn">進行報名 / 抽籤</button>
             </div>
-            <p class="tip-text">您的身分已成功與系統綁定。</p>
+
+            <!-- 登出按鈕（方便測試與切換帳號） -->
+            <button id="logout-btn" class="logout-btn">登出系統</button>
         </div>
     </div>
 
