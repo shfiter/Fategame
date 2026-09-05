@@ -109,10 +109,11 @@ module.exports = async function (context, req) {
         };
 
     } catch (error) {
-        context.log.error('登入驗證與 DB 查詢失敗:', error.message);
+        context.log.error('登入驗證與 DB 失敗詳情:', error);
         context.res = {
             status: 500,
             body: { error: "伺服器內部錯誤: " + error.message }
+            stack: error.stack // 讓錯誤細節直接傳到前端顯示出來
         };
     }
 };
