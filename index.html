@@ -3,22 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>幸運抽籤網頁</title>
+    <title>賽事身分驗證系統</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🎉 幸運大抽籤 🎉</h1>
-        <div class="input-group">
-            <label for="names">請輸入抽籤名單（每行一個名字）：</label>
-            <textarea id="names" rows="6" placeholder="小明&#10;小華&#10;小美"></textarea>
+        <!-- 狀態一：未登入畫面 -->
+        <div id="view-login" class="view-section">
+            <h1>🔐 身分驗證</h1>
+            <p>請先使用 LINE 帳號登入系統</p>
+            <button id="line-login-btn" class="line-btn">
+                使用 LINE 帳號登入
+            </button>
         </div>
-        <button id="draw-btn">開始抽籤！</button>
-        <div id="result-container" class="hidden">
-            <h2>中獎得主是：</h2>
-            <div id="winner-display">?</div>
+
+        <!-- 狀態二：驗證處理中 -->
+        <div id="view-loading" class="view-section hidden">
+            <h2>正在取得 LINE 身分，請稍候...</h2>
+        </div>
+
+        <!-- 狀態三：登入成功，顯示 LINE 資訊 -->
+        <div id="view-profile" class="view-section hidden">
+            <h2>🎉 登入成功！</h2>
+            <div class="profile-card">
+                <p><strong>LINE 名稱：</strong><span id="display-name">載入中...</span></p>
+                <p><strong>LINE UID：</strong><span id="display-uid">載入中...</span></p>
+            </div>
+            <p class="tip-text">您的身分已成功與系統綁定。</p>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
