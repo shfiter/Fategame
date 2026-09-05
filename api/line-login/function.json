@@ -5,8 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["post"],
-      "route": "line-login"
+      "methods": ["post"]
     },
     {
       "type": "http",
