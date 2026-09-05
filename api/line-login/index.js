@@ -1,4 +1,5 @@
-const axios = require('axios'); // 如果沒有 axios，也可以用 Node.js 內建的 fetch
+const https = require('https');
+const querystring = require('querystring');
 
 module.exports = async function (context, req) {
     const code = req.body && req.body.code;
@@ -12,45 +13,109 @@ module.exports = async function (context, req) {
         return;
     }
 
-    // 從 Azure 應用程式設定 (Environment Variables) 讀取你的 LINE 密鑰
     const clientId = process.env.LINE_CHANNEL_ID;
     const clientSecret = process.env.LINE_CHANNEL_SECRET;
 
     try {
-        // 1. 用 code 跟 LINE 交換 Access Token
-        const tokenParams = new URLSearchParams();
-        tokenParams.append('grant_type', 'authorization_code');
-        tokenParams.append('code', code);
-        tokenParams.append('redirect_uri', redirectUri);
-        tokenParams.append('client_id', clientId);
-        tokenParams.append('client_secret', clientSecret);
-
-        const tokenResponse = await axios.post('https://api.line.me/oauth2/v2.1/token', tokenParams);
-        const accessToken = tokenResponse.data.access_token;
-
-        // 2. 用 Access Token 跟 LINE 取得使用者個人資料 (名稱、UID)
-        const profileResponse = await axios.get('https://api.line.me/v2/profile', {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
+        // 1. 交換 Token
+        const tokenData = await postToLine('api.line.me', '/oauth2/v2.1/token', {
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: redirectUri,
+            client_id: clientId,
+            client_secret: clientSecret
         });
 
-        const lineUser = profileResponse.data;
+        if (!tokenData.access_token) {
+            throw new Error(tokenData.error_description || '無法取得 Access Token');
+        }
 
-        // 3. 把真實資料回傳給前端
+        const accessToken = tokenData.access_token;
+
+        // 2. 取得使用者 Profile
+        const profileData = await getFromLine('api.line.me', '/v2/profile', accessToken);
+
+        if (!profileData.userId) {
+            throw new Error('無法取得 LINE 使用者個資');
+        }
+
+        // 3. 成功回傳
         context.res = {
             status: 200,
             body: {
-                userId: lineUser.userId,
-                name: lineUser.displayName
+                userId: profileData.userId,
+                name: profileData.displayName
             }
         };
 
     } catch (error) {
-        context.log.error('LINE 登入交換失敗:', error.response ? error.response.data : error.message);
+        context.log.error('LINE 登入交換失敗:', error.message);
         context.res = {
             status: 500,
-            body: { error: "無法向 LINE 驗證身分" }
+            body: { error: "伺服器內部錯誤: " + error.message }
         };
     }
 };
+
+// Helper 函式：POST 請求
+function postToLine(host, path, data) {
+    return new Promise((resolve, reject) => {
+        const postData = querystring.stringify(data);
+        const options = {
+            hostname: host,
+            port: 443,
+            path: path,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Length': Buffer.byteLength(postData)
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', (chunk) => body += chunk);
+            res.on('end', () => {
+                try {
+                    resolve(JSON.parse(body));
+                } catch (e) {
+                    reject(new Error('解析 LINE 回應失敗: ' + body));
+                }
+            });
+        });
+
+        req.on('error', (e) => reject(e));
+        req.write(postData);
+        req.end();
+    });
+}
+
+// Helper 函式：GET 請求
+function getFromLine(host, path, token) {
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: host,
+            port: 443,
+            path: path,
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', (chunk) => body += chunk);
+            res.on('end', () => {
+                try {
+                    resolve(JSON.parse(body));
+                } catch (e) {
+                    reject(new Error('解析 LINE Profile 失敗: ' + body));
+                }
+            });
+        });
+
+        req.on('error', (e) => reject(e));
+        req.end();
+    });
+}
