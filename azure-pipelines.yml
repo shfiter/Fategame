@@ -4,6 +4,10 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+# 加上這一整段，自動把你在 Library 建好的變數群組帶進來！
+variables:
+  - group: StaticWebApps-Secrets
+
 steps:
 - checkout: self
   submodules: true
